@@ -1,0 +1,118 @@
+version: "3.8"
+services:
+  flowable:
+    build: ./Flowable
+    depends_on:
+       - db1
+    networks:
+      - vws4ls
+    ports:
+      - 8081:8080
+    container_name: flowable
+    environment:
+      - SPRING_DATASOURCE_DRIVER-CLASS-NAME=org.postgresql.Driver
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db1:5432/flowable
+      - SPRING_DATASOURCE_USERNAME=flowable
+      - SPRING_DATASOURCE_PASSWORD=flowable
+      - AAS_REGISTRY_URL=http://aas-registry:8080
+      - SM_REGISTRY_URL=http://sm-registry:8080
+      - NODE_RED_URL=http://node-red:1880
+
+  aas-registry:
+    image: eclipsebasyx/aas-registry-log-mem:2.0.0-SNAPSHOT
+    networks:
+      - vws4ls
+    container_name: aas-registry
+    ports:
+        - 4000:8080  
+    volumes:
+        - ./aas-registry.yml:/workspace/config/application.yml   
+
+  sm-registry:
+    image: eclipsebasyx/submodel-registry-log-mem:2.0.0-SNAPSHOT
+    networks:
+      - vws4ls
+    container_name: sm-registry
+    ports:
+        - 4002:8080  
+    volumes:
+        - ./sm-registry.yml:/workspace/config/application.yml   
+
+  environment:
+    image: eclipsebasyx/aas-environment:2.0.0-SNAPSHOT
+    networks:
+      - vws4ls
+    container_name: environment
+    volumes:
+        - ./application.properties:/application/application.properties
+        - ./aas-json:/application/aas
+    ports:
+        - 192.168.144.1:4001:8081 
+    depends_on:
+      aas-registry:
+        condition: service_healthy
+      sm-registry:
+        condition: service_healthy
+    
+  aas-discovery:
+    image: eclipsebasyx/aas-discovery:2.0.0-SNAPSHOT
+    ports:
+      - 4003:8081
+    volumes:
+      - ./aas-discovery.properties:/application/application.properties
+
+  gui: 
+    image: aaronzi/basyx-aas-ui:SNAPSHOT_15
+    networks:
+      - vws4ls
+    ports:
+        - 3000:3000
+    depends_on:
+      environment:
+        condition: service_healthy
+    container_name: gui
+    environment:
+        #CHOKIDAR_USEPOLLING: "true"
+        VITE_AAS_REGISTRY_PATH: http://localhost:4000/shell-descriptors
+        VITE_SUBMODEL_REGISTRY_PATH: http://localhost:4002/submodel-descriptors
+        VITE_AAS_REPO_PATH: http://192.168.144.1:4001/shells
+        VITE_SUBMODEL_REPO_PATH: http://192.168.144.1:4001/submodels
+        VITE_CD_REPO_PATH: http://192.168.144.1:4001/concept-descriptions
+        VITE_AAS_DISCOVERY_PATH: http://localhost:4003/lookup/shells
+        VITE_PRIMARY_COLOR: "#E3672A"
+        #BASE_PATH: "<base_path>"
+    #volumes:
+        #- ./logo:/app/src/assets/Logo
+        #- <local_path_to_plugins>:/app/src/UserPlugins
+
+  db1:
+    image: postgres:13
+    environment:
+      - POSTGRES_PASSWORD=flowable
+      - POSTGRES_USER=flowable
+      - POSTGRES_DB=flowable
+    volumes:
+      - db1-data:/var/lib/postgresql/data
+    container_name: db1
+    networks:
+      - vws4ls
+
+  node-red:
+    image: nodered/node-red:3.1
+    environment:
+      - TZ=Europe/Amsterdam
+    networks:
+     - vws4ls
+    container_name: node-red
+    ports:
+      - 1880:1880
+    volumes:
+      - node-red-data:/data
+
+volumes:
+  db1-data:
+  node-red-data:
+
+networks:
+  vws4ls:
+    external: true

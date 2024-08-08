@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+  sdk:
+    build: ./dev
+    command: bash
+    volumes:
+      - ./src:/src

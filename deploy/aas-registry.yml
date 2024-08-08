@@ -1,0 +1,5 @@
+---
+basyx:
+  cors:
+    allowed-origins: "http://localhost:3000,http://localhost:4001,http://localhost:4002,http://localhost:4003, http://localhost:8081,http://localhost:1880"
+    allowed-methods: "GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD"

@@ -1,0 +1,17 @@
+stages:
+  - build
+
+build:
+  stage: build
+  tags:
+  - pv-test
+  image: eclipse-temurin:17-jdk-jammy
+  script:
+  - apt-get update && apt-get install -y maven
+  - mvn -f src/FlowableDelegates/pom.xml package
+  - jarsigner --verify src/FlowableDelegates/target/FlowableDelegates-1.0-SNAPSHOT.jar
+  artifacts:
+    when: on_success
+    expire_in: "30 days"
+    paths:
+      - src/FlowableDelegates/target/FlowableDelegates-1.0-SNAPSHOT.jar
