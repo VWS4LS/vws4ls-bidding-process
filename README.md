@@ -12,8 +12,6 @@ docker-compose build
 docker-compose run sdk
 cd /src/FlowableDelegates
 mvn package
-cd /src/AASServiceRequester
-mvn package
 ```
 
 This will generate jar files in the corresponding `target` folders, like `target/FlowableDelegates-1.0-SNAPSHOT.jar`.

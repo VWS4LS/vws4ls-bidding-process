@@ -1,6 +1,12 @@
 version: "3.8"
+
+volumes:
+  db1-data:
+  node-red-data:
+
 services:
   flowable:
+    image: ghcr.io/vws4ls/vws4ls-bidding-process/deploy-flowable:latest
     build: ./Flowable
     depends_on:
        - db1
@@ -17,6 +23,32 @@ services:
       - AAS_REGISTRY_URL=http://aas-registry:8080
       - SM_REGISTRY_URL=http://sm-registry:8080
       - NODE_RED_URL=http://node-red:1880
+
+  db1:
+    image: postgres:13
+    environment:
+      - POSTGRES_PASSWORD=flowable
+      - POSTGRES_USER=flowable
+      - POSTGRES_DB=flowable
+    volumes:
+      - db1-data:/var/lib/postgresql/data
+    container_name: db1
+    networks:
+      - vws4ls
+
+  node-red:
+    image: nodered/node-red:3.1
+    environment:
+      - TZ=Europe/Amsterdam
+    networks:
+     - vws4ls
+    container_name: node-red
+    ports:
+      - 1880:1880
+    volumes:
+      - node-red-data:/data
+
+
 
   aas-registry:
     image: eclipsebasyx/aas-registry-log-mem:2.0.0-SNAPSHOT
@@ -84,34 +116,6 @@ services:
     #volumes:
         #- ./logo:/app/src/assets/Logo
         #- <local_path_to_plugins>:/app/src/UserPlugins
-
-  db1:
-    image: postgres:13
-    environment:
-      - POSTGRES_PASSWORD=flowable
-      - POSTGRES_USER=flowable
-      - POSTGRES_DB=flowable
-    volumes:
-      - db1-data:/var/lib/postgresql/data
-    container_name: db1
-    networks:
-      - vws4ls
-
-  node-red:
-    image: nodered/node-red:3.1
-    environment:
-      - TZ=Europe/Amsterdam
-    networks:
-     - vws4ls
-    container_name: node-red
-    ports:
-      - 1880:1880
-    volumes:
-      - node-red-data:/data
-
-volumes:
-  db1-data:
-  node-red-data:
 
 networks:
   vws4ls:
