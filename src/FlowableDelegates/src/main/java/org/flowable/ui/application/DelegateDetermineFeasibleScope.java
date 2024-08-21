@@ -8,6 +8,11 @@ import org.aas.services.SimpleServices;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.SerializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
@@ -23,7 +28,7 @@ public class DelegateDetermineFeasibleScope implements JavaDelegate {
     public void execute(DelegateExecution execution) {
 
 		//String requestedAASID = execution.getVariable("requestedAASID", String.class);
-		boolean proposalFeasible = true; //Has to be changed to "false" when function is integrated
+		boolean proposalFeasible = false; //Has to be changed to "false" when function is integrated
 
 		try {
 			determineFeasibility_I40_messageObject.deserializeMsg(execution.getVariable("incommingMessage", String.class));
@@ -38,7 +43,7 @@ public class DelegateDetermineFeasibleScope implements JavaDelegate {
 		//Invoke AAS operation "determineFeasibleScope" with input variables
 		DefaultReferenceElement tmpReference = SimpleServices.findReferenceElementWithIdShort(determineFeasibility_I40_messageObject.submodelReferences.getValue(), "ProductTypeReference");
 		String tmpProposal = NodeRedAPI.invokeDetermineFeasibleScope(determineFeasibility_I40_messageObject.receiver.getValue(), tmpReference.getValue().getKeys().get(0).getValue());
-		
+
 		DefaultProperty proposalDataElement = new DefaultProperty();
 		proposalDataElement.setIdShort("DataElementProposal");
 		proposalDataElement.setValue(tmpProposal);
@@ -52,7 +57,25 @@ public class DelegateDetermineFeasibleScope implements JavaDelegate {
 		smlTemp.add(determineFeasibility_I40_messageObject.dataElements);
 		determineFeasibility_I40_messageObject.interactionElementsCollection.setValue(smlTemp);
 
-		//set gateway in flowable
+		//formating output for user		
+		ObjectMapper mapper = new ObjectMapper();
+		String formattedProposal = "";
+		try {
+			JsonNode node = mapper.readTree(tmpProposal);
+			formattedProposal = node.toPrettyString();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		execution.setVariable("form_Proposal", formattedProposal);
+		System.out.println("Formatted Proposal: " + formattedProposal);
+		
+		if(formattedProposal.contains("\"success\" : true")){
+			proposalFeasible = true;
+		} else if (formattedProposal.contains("\"success\" : false")){
+			proposalFeasible = false;
+		}
+
 		if (proposalFeasible) {
 			execution.setVariable("message", "offer");
 		} else{
@@ -60,8 +83,7 @@ public class DelegateDetermineFeasibleScope implements JavaDelegate {
 			execution.setVariable("resultBiddingProcess", "A refusal is sent.");
 		}
 		
-		//Klärung, ob der Output zu Flowable geht und von da aus in die VWS geschrieben wird oder aber, ob dieser direkt vom Algorithmus in die VWS geschrieben wird.
-		execution.setVariable("form_Proposal", tmpProposal);
+		
 
 		//set outgoing message variable in flowable
 		try {

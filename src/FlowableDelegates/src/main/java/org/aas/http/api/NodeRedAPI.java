@@ -7,10 +7,15 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.aas.message.I4_0_message;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class NodeRedAPI{
 
@@ -68,7 +73,33 @@ public class NodeRedAPI{
         return response;
     }
 
-    public static String invokeSelectBestProposals(I4_0_message[] JSONInputBody, String selectionStrategy){
+    public static String invokeSelectBestProposals(I4_0_message[] I40message, String selectionStrategy){
+        
+        List<ObjectNode> JSONInputBody = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        
+        for (I4_0_message msg : I40message) {
+            ObjectNode json = mapper.createObjectNode();
+            DefaultProperty prop = (DefaultProperty) msg.dataElements.getValue().get(0);
+            String sender = msg.sender.getValue();
+            String conversationId = msg.conversationId.getValue();
+            String proposal = prop.getValue();
+
+            ObjectNode node = mapper.createObjectNode();
+            try {
+                node = mapper.readValue(proposal, ObjectNode.class);
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            json.put("Sender", sender);
+            json.put("ConversationId", conversationId);
+            json.set("Proposal", node);
+
+            JSONInputBody.add(json);
+        }
         
         String URLString = NODE_RED_URL + "/aasCommunicationManager/selectBestProposals?selectionStrategy=" + selectionStrategy;
         String response = new String();
@@ -82,7 +113,6 @@ public class NodeRedAPI{
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
 
-            ObjectMapper mapper = new ObjectMapper();
             String input = mapper.writeValueAsString(JSONInputBody);
 
             OutputStream os = conn.getOutputStream();

@@ -7,6 +7,10 @@ import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultReferenceElement;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class UIServices {
         public static String getSMReferences(SubmodelElementCollection SubmodelElementCollection){
             String smcReferences = "";
@@ -45,11 +49,25 @@ public class UIServices {
 
         public static String displayProposal(I4_0_message I40message){
             String proposal = "";
-            String jsonProposal = I40message.dataElements.getValue().toString();
+            //is only applicable if one data element of type proposal exists
+            DefaultProperty prop = (DefaultProperty) I40message.dataElements.getValue().get(0);
+            String jsonProposal = prop.getValue();
+            ObjectMapper mapper = new ObjectMapper();
+            String formattedProposal = "";
+
             proposal += "Sender: " + I40message.sender.getValue() + "\n";
             proposal += "ConversationId (ProposalId): " + I40message.conversationId.getValue() + "\n";
+
+            //formatting output for user		
+            try {
+                JsonNode node = mapper.readTree(jsonProposal);
+                formattedProposal = node.toPrettyString();
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             proposal += "Proposal: " + "\n";
-            proposal += jsonProposal;
+            proposal += formattedProposal;
             
             return proposal;
         }

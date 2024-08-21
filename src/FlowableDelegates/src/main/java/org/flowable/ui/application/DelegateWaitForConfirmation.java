@@ -15,22 +15,15 @@ public class DelegateWaitForConfirmation implements JavaDelegate {
 
 	private int refusalCounter = 0;
 	private int confirmationCounter = 0;
+	private static String confirmedProposals = "";
 
 	@Override
     public void execute(DelegateExecution execution) {
 
 		//counting the incomming confirmations
-		String confirmedProposals = "";
 		int ingoingMessageCounter = execution.getVariable("confirmationCounter",Integer.class);
 		ingoingMessageCounter++;
 		execution.setVariable("confirmationCounter", ingoingMessageCounter);
-
-		//set the delegate to an end when all expected proposals are collected
-		if (DelegateChooseProposal.expectedMessageCounter == ingoingMessageCounter){
-			execution.setVariable("collectConfirmations", "end");
-			execution.setVariable("form_selectedProposal", confirmedProposals);
-			execution.setVariable("form_selectionStrategy", DelegateCreateCFP.selectionStrategy);
-    	}
 
 		I4_0_message readMessage_I40_messageObject = MsgParticipantServices.getDefault_I40_MessageObject(DelegateCreateCFP.I40_messageOperation);
 
@@ -49,13 +42,19 @@ public class DelegateWaitForConfirmation implements JavaDelegate {
 		
 		if(readMessage_I40_messageObject.type.getValue().compareTo(MessageType.confirming.toString()) == 0){
 			confirmationCounter++;
-			confirmedProposals += UIServices.displayProposal(readMessage_I40_messageObject); 
+			confirmedProposals += UIServices.displayProposal(readMessage_I40_messageObject) + "\n\n"; 
 		} else if (readMessage_I40_messageObject.type.getValue().compareTo(MessageType.refusal.toString()) == 0){
 			refusalCounter++;
 		}
 
-		execution.setVariable("form_status", "There are " + confirmationCounter + " of " + ingoingMessageCounter + " proposals confirmend and " + refusalCounter + " refused.");
+		//set the delegate to an end when all expected proposals are collected
+		if (DelegateChooseProposal.expectedMessageCounter == ingoingMessageCounter){
+			execution.setVariable("collectConfirmations", "end");
+			execution.setVariable("form_selectedProposal", confirmedProposals);
+			execution.setVariable("form_selectionStrategy", DelegateCreateCFP.selectionStrategy);
+    	}
 
+		execution.setVariable("form_status", "There are " + confirmationCounter + " of " + ingoingMessageCounter + " proposals confirmend and " + refusalCounter + " refused.");
 				
     }
 }

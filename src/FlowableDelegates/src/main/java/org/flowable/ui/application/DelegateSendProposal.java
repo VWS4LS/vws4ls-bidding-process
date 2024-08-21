@@ -39,10 +39,19 @@ public class DelegateSendProposal implements JavaDelegate {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
         }
-			
+		
+		//set message type for provider response
+		String msgType = "";
+		if(execution.getVariable("message").toString().compareTo("offer") == 0){
+			msgType = MessageType.offer.toString();
+		}
+		else if (execution.getVariable("message").toString().compareTo("refusal") == 0){
+			msgType = MessageType.refusal.toString();
+		}
+
 		//change frame elements like sender and receiver for the outgoing message
         sendProposal_I40_messageObject = MsgParticipantServices.setFrameElements(sendProposal_I40_messageObject, 
-													MessageType.offer.toString(), 
+													msgType, 
 													sendProposal_I40_messageObject.receiver.getValue(), 
 													sendProposal_I40_messageObject.sender.getValue(), 
 													execution.getProcessInstanceId(), 
