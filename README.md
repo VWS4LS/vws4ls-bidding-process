@@ -6,11 +6,9 @@ The demonstrator shows an order driven production with the help of proactive Ass
 
 The architecture of the demonstrator is shown in [Fig. 1][fig_architecture]. On the left side you can see the abstract architeture[^footnoteAASArchitecture] of a proactive AAS with a passive and an active part. The right side shows the technical implementation. The exchange of I4.0-messages between several AAS is realized by an AAS submodel called Message Participant. In this submodel an operation with the name `newMessage` is implemented which follows the message structure of VDI 2193[^footnoteVDI2193-1],[^footnoteVDI2193-2]. To start the bidding process an additional user defined operation is specified in the Service Requester's AAS. Further details can be found in the published paper on the bidding process[^footnoteETFAPaper].
 
-[fig_architecture]: https://notes.ifak.eu/uploads/upload_878a83b1bfe6668270fcaa12e473fbe0.png "Architecture of proactive AAS"
-![Fig. 1](https://notes.ifak.eu/uploads/upload_878a83b1bfe6668270fcaa12e473fbe0.png)
+[fig_architecture]: ./images/environmentarchitecture.png "Architecture of proactive AAS"
+![Fig. 1](./images/environmentarchitecture.png)
 Fig. 1: Architecture of proactive AAS
-
-
 
 According to the architecture on the right in [Fig. 1][fig_architecture], the demonstrator consists of the following software components:
 
@@ -33,10 +31,9 @@ Option 2 can be implemented after the instructions of option 1 have been execute
 ##### Docker
 A [Docker Engine](https://docs.docker.com/engine/install/) should be installed on your computer.
 
-Download the flowable Docker image with your SSH key.
+Download the flowable Docker image:
 
-
-    docker pull ghcr.io/vws4ls/vws4ls-bidding-process/deploy-flowable:latest@sha256:82jf9a84u29hiasldj289498uhois8498hjs29hkuhs 
+    docker pull ghcr.io/vws4ls/vws4ls-bidding-process/deploy-flowable:latest
 
 ##### Node-Red
 
@@ -54,7 +51,7 @@ Change the the variable `basyx.externalurl` in the file `application.properties`
 
 Start a command line in the `deploy` folder and type the following command:
     
-    docker-compose up -d
+    docker compose up -d
     
 If all docker containers are started correctly you can reach the single software applications under the following adresses:
 
@@ -95,8 +92,8 @@ A dedicated development container is used for this, defined by the `docker-compo
 
 Start a command line in the main directory and type the following commands to build all necessary jar files:
 
-    docker-compose build
-    docker-compose run sdk
+    docker compose build
+    docker compose run sdk
     cd /src/FlowableDelegates
     mvn package
 
@@ -119,7 +116,7 @@ Finally, the containers can be started:
 
 
     cd deploy
-    docker-compose up
+    docker compose up -d
 
 Then make the same steps as described in the section [Start a bidding process](#startBiddingProcess)
 
