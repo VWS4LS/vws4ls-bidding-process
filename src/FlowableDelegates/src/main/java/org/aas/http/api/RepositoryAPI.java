@@ -48,7 +48,6 @@ public class RepositoryAPI {
         while ((output = br.readLine()) != null) {
             response += output;
 		}
-        //System.out.println("Response of getAASbyEndpoint: " + response);
 
 		conn.disconnect();
 
@@ -98,7 +97,6 @@ public class RepositoryAPI {
         while ((output = br.readLine()) != null) {
             response += output;
 		}
-        //System.out.println("Response of getSubmodelElementList: " + response);
 
 		conn.disconnect();
 
@@ -147,7 +145,6 @@ public class RepositoryAPI {
         while ((output = br.readLine()) != null) {
             response += output;
 		}
-        //System.out.println("Response fo getOperation: " + response);
 
 		conn.disconnect();
 
@@ -197,7 +194,6 @@ public class RepositoryAPI {
         while ((output = br.readLine()) != null) {
             response += output;
 		}
-        //System.out.println("Response of getSubmodelProperty: " + response);
 
 		conn.disconnect();
 
@@ -246,7 +242,6 @@ public class RepositoryAPI {
         while ((output = br.readLine()) != null) {
             response += output;
 		}
-        //System.out.println("Response of getSubmodelProperty: " + response);
 
 		conn.disconnect();
 
@@ -276,8 +271,6 @@ public class RepositoryAPI {
         String encodedIdShortPath = URLEncoder.encode(idShortPathAsString,StandardCharsets.UTF_8);
         String urlEncoded = smEndpointAsString + "/submodel-elements/" + encodedIdShortPath +"/invoke";
         String response = new String();
-        System.out.println("invoked Path: " + urlEncoded);
-
 
         try {
 
@@ -293,11 +286,10 @@ public class RepositoryAPI {
             os.write(input.getBytes());
             os.flush();
 
-            //When this isn't commented, than the invocation fails
-            /* if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+            if (conn.getResponseCode() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : "
-                    + conn.getResponseCode());
-            } */
+                        + conn.getResponseCode());
+            }
 
             BufferedReader br = new BufferedReader(new InputStreamReader(
                     (conn.getInputStream())));
@@ -306,7 +298,6 @@ public class RepositoryAPI {
             while ((output = br.readLine()) != null) {
                 response += output;
             }
-            //System.out.println("Response of invokeOperation: " + response);
 
             conn.disconnect();
 

@@ -46,6 +46,8 @@ public class DelegateEvaluateAnswer implements JavaDelegate {
 		String smcReferences = "";
 		String smcDataElements = "";
 
+		//Map flowable variables to I40_message object and
+		//Prepare output for flowable UI
 		for (String name : variableNames){		
 			String idShort = "";
 			String value = "";
@@ -87,7 +89,7 @@ public class DelegateEvaluateAnswer implements JavaDelegate {
 			execution.setVariable("resultBiddingProcess", "The answer was evaluated and the proposal accepted.");
         }
         else if (readAnswerMessage_I40_messageObject.type.getValue().toString().equals(MessageType.offer_rejection.toString())){
-            execution.setVariable("offerAccepted", "true");
+            execution.setVariable("offerAccepted", "false");
             execution.setVariable("resultBiddingProcess", "The answer was evaluated but the proposal not accepted.");   
         }
 

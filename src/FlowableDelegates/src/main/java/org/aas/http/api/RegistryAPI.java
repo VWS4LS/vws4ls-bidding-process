@@ -45,7 +45,6 @@ public class RegistryAPI {
         //cleaning respsonse for deserialization
         response = response.replace("{\"paging_metadata\":{\"cursor\":null},\"result\":", "");
         response = response.substring(0, response.lastIndexOf("}"));
-        //System.out.println("Response of getAllShellDescriptors: " + response);
 
 		conn.disconnect();
 
@@ -95,7 +94,6 @@ public class RegistryAPI {
         while ((output = br.readLine()) != null) {
             response += output;
 		}
-        //System.out.println("Response of getAASDescriptorByAASID: " + response);
 
 		conn.disconnect();
 
@@ -145,7 +143,6 @@ public class RegistryAPI {
         while ((output = br.readLine()) != null) {
             response += output;
 		}
-        //System.out.println("Response of getSMDescriptorBySMID: " + response);
 
 		conn.disconnect();
 

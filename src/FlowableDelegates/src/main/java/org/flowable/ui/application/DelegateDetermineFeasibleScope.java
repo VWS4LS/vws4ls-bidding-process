@@ -40,10 +40,11 @@ public class DelegateDetermineFeasibleScope implements JavaDelegate {
 		
 		//Festlegen, welche zusätzlichen Variablen für den Algorithmus notwendig sind
 
-		//Invoke AAS operation "determineFeasibleScope" with input variables
+		//invoke AAS operation "determineFeasibleScope" with input variables
 		DefaultReferenceElement tmpReference = SimpleServices.findReferenceElementWithIdShort(determineFeasibility_I40_messageObject.submodelReferences.getValue(), "ProductTypeReference");
 		String tmpProposal = NodeRedAPI.invokeDetermineFeasibleScope(determineFeasibility_I40_messageObject.receiver.getValue(), tmpReference.getValue().getKeys().get(0).getValue());
 
+		//deserialize the proposal to a single AAS property in the dataElements collection
 		DefaultProperty proposalDataElement = new DefaultProperty();
 		proposalDataElement.setIdShort("DataElementProposal");
 		proposalDataElement.setValue(tmpProposal);
@@ -68,7 +69,6 @@ public class DelegateDetermineFeasibleScope implements JavaDelegate {
 			e.printStackTrace();
 		}
 		execution.setVariable("form_Proposal", formattedProposal);
-		System.out.println("Formatted Proposal: " + formattedProposal);
 		
 		if(formattedProposal.contains("\"success\" : true")){
 			proposalFeasible = true;
@@ -82,8 +82,6 @@ public class DelegateDetermineFeasibleScope implements JavaDelegate {
 			execution.setVariable("message", "refusal");
 			execution.setVariable("resultBiddingProcess", "A refusal is sent.");
 		}
-		
-		
 
 		//set outgoing message variable in flowable
 		try {

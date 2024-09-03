@@ -26,7 +26,6 @@ public class NodeRedAPI{
         String[][] msg = {{"Machine_AAS_ID", machineAASID}, {"Product_Type_AAS_ID", productTypeAASID}};
         String URLString = NODE_RED_URL + "/aasCommunicationManager/determineFeasibleScope";
         String response = new String();
-        System.out.println("invoked Path: " + URLString);
 
         try {
 
@@ -43,11 +42,10 @@ public class NodeRedAPI{
             os.write(input.getBytes());
             os.flush();
 
-            //When this isn't commented, than the invocation fails
-            /* if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+            if (conn.getResponseCode() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : "
-                    + conn.getResponseCode());
-            } */
+                        + conn.getResponseCode());
+                }
 
             BufferedReader br = new BufferedReader(new InputStreamReader(
                     (conn.getInputStream())));
@@ -56,7 +54,6 @@ public class NodeRedAPI{
             while ((output = br.readLine()) != null) {
                 response += output;
             }
-            System.out.println("Response of Node-RED invokeOperation: " + response);
 
             conn.disconnect();
 
@@ -103,7 +100,6 @@ public class NodeRedAPI{
         
         String URLString = NODE_RED_URL + "/aasCommunicationManager/selectBestProposals?selectionStrategy=" + selectionStrategy;
         String response = new String();
-        System.out.println("invoked Path: " + URLString);
 
         try {
 
@@ -119,11 +115,10 @@ public class NodeRedAPI{
             os.write(input.getBytes());
             os.flush();
 
-            //When this isn't commented, than the invocation fails
-            /*if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+            if (conn.getResponseCode() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : "
-                    + conn.getResponseCode());
-            } */
+                        + conn.getResponseCode());
+                }
 
             BufferedReader br = new BufferedReader(new InputStreamReader(
                     (conn.getInputStream())));

@@ -77,9 +77,9 @@ services:
     container_name: environment
     volumes:
         - ./application.properties:/application/application.properties
-        - ./aas-json:/application/aas
+        - ./aasx:/application/aas
     ports:
-        - 192.168.64.1:4001:8081 
+        - 4001:8081 
     depends_on:
       aas-registry:
         condition: service_healthy
@@ -107,9 +107,9 @@ services:
         #CHOKIDAR_USEPOLLING: "true"
         VITE_AAS_REGISTRY_PATH: http://localhost:4000/shell-descriptors
         VITE_SUBMODEL_REGISTRY_PATH: http://localhost:4002/submodel-descriptors
-        VITE_AAS_REPO_PATH: http://192.168.64.1:4001/shells
-        VITE_SUBMODEL_REPO_PATH: http://192.168.64.1:4001/submodels
-        VITE_CD_REPO_PATH: http://192.168.64.1:4001/concept-descriptions
+        VITE_AAS_REPO_PATH: http://localhost:4001/shells
+        VITE_SUBMODEL_REPO_PATH: http://localhost:4001/submodels
+        VITE_CD_REPO_PATH: http://localhost:4001/concept-descriptions
         VITE_AAS_DISCOVERY_PATH: http://localhost:4003/lookup/shells
         VITE_PRIMARY_COLOR: "#E3672A"
         #BASE_PATH: "<base_path>"

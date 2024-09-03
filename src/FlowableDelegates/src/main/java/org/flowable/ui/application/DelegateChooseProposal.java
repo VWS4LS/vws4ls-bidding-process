@@ -45,17 +45,25 @@ public class DelegateChooseProposal implements JavaDelegate {
         //Invoke AAS operation "selectBestProposals" with input variables
 		String output = NodeRedAPI.invokeSelectBestProposals(chooseProposal_I40_messageObjects, DelegateCreateCFP.selectionStrategy);
 
-
-        //implement a loop where the proposal correlating to the recevierID is selected
-        //if the descision ist "true" then an offer acceptance will be send
+        //if the decision ist "true" then an offer acceptance will be send
         //else an offer rejection will be send
         for(I4_0_message proposal : chooseProposal_I40_messageObjects) {
+
+            String msgType = "";
+            if(output.contains(proposal.sender.getValue())){
+                msgType = MessageType.offer_acceptance.toString();
+
+                //counting the accepted proposals for later checking of confirmation status
+                expectedMessageCounter++; 
+            } else {
+                msgType = MessageType.offer_rejection.toString();
+            }
             
             proposal = MsgParticipantServices.setFrameElements(proposal);
             proposal.interactionElementsCollection = proposal.interactionElementsCollection;
 
             proposal = MsgParticipantServices.setFrameElements(proposal, 
-							MessageType.offer_acceptance.toString(), 
+							msgType, 
 							proposal.receiver.getValue(), 
                             proposal.sender.getValue(),
 							execution.getProcessInstanceId(),
@@ -64,10 +72,6 @@ public class DelegateChooseProposal implements JavaDelegate {
 							proposal.replyBy.getValue(),
 							proposal.semanticProtocol.getValue(), 
 							"ServiceRequester");            
-            //counting the accepted proposals for later checking of confirmation status
-            expectedMessageCounter++; 
-        }
-
-        //interaction elements needs to be filled        
+        }      
     }
 }

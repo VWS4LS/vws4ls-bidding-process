@@ -59,6 +59,7 @@ public class DelegateCollectProposals implements JavaDelegate {
 				List<SubmodelElement> dataElementsList = new ArrayList<>();
 				Set<String> variableNames = execution.getVariableNames();
 
+				//Map flowable variables to I40_message object
 				for (String name : variableNames){		
 					String idShort = "";
 					String value = "";
@@ -90,8 +91,6 @@ public class DelegateCollectProposals implements JavaDelegate {
 				}
 				readMessage_I40_messageObject.submodelReferences.setValue(submodelReferencesList);
 				readMessage_I40_messageObject.dataElements.setValue(dataElementsList);
-
-				System.out.println("Collect InteractionCollection: " + readMessage_I40_messageObject.interactionElementsCollection.toString());
 
 				execution.setVariable(formVariable, UIServices.displayProposal(readMessage_I40_messageObject));
 

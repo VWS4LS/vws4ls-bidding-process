@@ -40,9 +40,9 @@ public class DelegateSendDecision implements JavaDelegate {
 			answer.ov_interactionElements.setValue(answer.interactionElementsCollection);
 			inputArguments.add(answer.ov_interactionElements);
 			inputArguments.add(answer.ov_frame);
+
 			//As an easy use case it is assumed that there is only one endpoint for the submodel "MessageParticipant" which operation can be invoked
 			//in complex cases this needs to be expanded 
-
 			if(receiverEndpoints.size() <= 1 && receiverEndpoints.size() > 0){
 				OperationServices.invokeOperation(receiverEndpoints.get(0).get(3).toString(), "newMessage", inputArguments);
 			}

@@ -30,7 +30,7 @@ public class DelegateReadMessage implements JavaDelegate {
 	private final String SM_REGISTRYPATH = System.getenv().get("SM_REGISTRY_URL");
 	private String semanticID_SMMessageParticipant = "http://vws4ls.com/sample/submodel/type/messageParticipant/1/0/Submodel";
 	public static DefaultOperation I40_messageOperation = new DefaultOperation();
-	private I4_0_message readMessage_I40_messageObject;// = new I4_0_message();
+	private I4_0_message readMessage_I40_messageObject;
 	private DefaultOperation determineFeasibleScopeOperation = new DefaultOperation();
 
 	@Override
@@ -72,6 +72,7 @@ public class DelegateReadMessage implements JavaDelegate {
 			execution.setVariable("message", "understood");
 		}
 
+		//Map flowable variables to I40_message object and
 		//Prepare output for flowable UI
 		List<SubmodelElement> submodelReferencesList = new ArrayList<>();
 		List<SubmodelElement> dataElementsList = new ArrayList<>();
