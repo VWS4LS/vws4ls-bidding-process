@@ -29,6 +29,7 @@ public class RepositoryAPI {
     public static DefaultAssetAdministrationShell getAASbyEndpoint(String aasEndpointAsString){
         DefaultAssetAdministrationShell aas = new DefaultAssetAdministrationShell();
         String response = new String();
+        System.out.println("AAS-Endpoint: " + aasEndpointAsString);
 
         try{
             URL url = new URL(aasEndpointAsString);
