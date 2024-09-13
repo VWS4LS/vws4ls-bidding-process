@@ -1,5 +1,6 @@
 package org.aas.http.api;
 
+import java.util.Base64;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,6 +26,8 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 public class RepositoryAPI {
 
     private static JsonDeserializer deserializer = new JsonDeserializer();
+    private static final String AAS_REPO_USER_NAME = System.getenv().get("AAS_REPO_USER_NAME");
+    private static final String AAS_REPO_PASSWORD = System.getenv().get("AAS_REPO_PASSWORD");
 
     public static DefaultAssetAdministrationShell getAASbyEndpoint(String aasEndpointAsString){
         DefaultAssetAdministrationShell aas = new DefaultAssetAdministrationShell();
@@ -36,6 +39,14 @@ public class RepositoryAPI {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
+
+            String username = AAS_REPO_USER_NAME;
+            String password = AAS_REPO_PASSWORD;
+            String auth = username + ":" + password;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            String authHeaderValue = "Basic " + encodedAuth;
+
+            conn.setRequestProperty("Authorization", authHeaderValue);
 
             if (conn.getResponseCode() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
@@ -86,6 +97,14 @@ public class RepositoryAPI {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
+            String username = AAS_REPO_USER_NAME;
+            String password = AAS_REPO_PASSWORD;
+            String auth = username + ":" + password;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            String authHeaderValue = "Basic " + encodedAuth;
+
+            conn.setRequestProperty("Authorization", authHeaderValue);
+
             if (conn.getResponseCode() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
 					+ conn.getResponseCode());
@@ -133,6 +152,14 @@ public class RepositoryAPI {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
+
+            String username = AAS_REPO_USER_NAME;
+            String password = AAS_REPO_PASSWORD;
+            String auth = username + ":" + password;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            String authHeaderValue = "Basic " + encodedAuth;
+
+            conn.setRequestProperty("Authorization", authHeaderValue);
 
             if (conn.getResponseCode() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
@@ -183,6 +210,14 @@ public class RepositoryAPI {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
+            String username = AAS_REPO_USER_NAME;
+            String password = AAS_REPO_PASSWORD;
+            String auth = username + ":" + password;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            String authHeaderValue = "Basic " + encodedAuth;
+
+            conn.setRequestProperty("Authorization", authHeaderValue);
+
             if (conn.getResponseCode() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
 					+ conn.getResponseCode());
@@ -230,6 +265,14 @@ public class RepositoryAPI {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
+
+            String username = AAS_REPO_USER_NAME;
+            String password = AAS_REPO_PASSWORD;
+            String auth = username + ":" + password;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            String authHeaderValue = "Basic " + encodedAuth;
+
+            conn.setRequestProperty("Authorization", authHeaderValue);
 
             if (conn.getResponseCode() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
@@ -280,6 +323,14 @@ public class RepositoryAPI {
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
+
+            String username = AAS_REPO_USER_NAME;
+            String password = AAS_REPO_PASSWORD;
+            String auth = username + ":" + password;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            String authHeaderValue = "Basic " + encodedAuth;
+
+            conn.setRequestProperty("Authorization", authHeaderValue);
 
             String input =inputArgumentsAsJSONString;
 

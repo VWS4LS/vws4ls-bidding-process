@@ -23,6 +23,8 @@ services:
       - AAS_REGISTRY_URL=http://aas-registry:8080
       - SM_REGISTRY_URL=http://sm-registry:8080
       - NODE_RED_URL=http://node-red:1880
+      - AAS_REPO_USER_NAME=USER_NAME
+      - AAS_REPO_PASSWORD=PASSWORD
 
   db1:
     image: postgres:13
