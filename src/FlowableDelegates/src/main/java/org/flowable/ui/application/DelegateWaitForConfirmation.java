@@ -15,15 +15,18 @@ public class DelegateWaitForConfirmation implements JavaDelegate {
 
 	private int refusalCounter = 0;
 	private int confirmationCounter = 0;
-	private static String confirmedProposals = "";
+	private int ingoingMessageCounter = 0;
+	private int expectedMessageCounter = 0;
+	private static String selectedProposals = "";
 
 	@Override
     public void execute(DelegateExecution execution) {
 
 		//counting the incomming confirmations
-		int ingoingMessageCounter = execution.getVariable("confirmationCounter",Integer.class);
+		ingoingMessageCounter = execution.getVariable("ingoingMessageCounter",Integer.class);
 		ingoingMessageCounter++;
-		execution.setVariable("confirmationCounter", ingoingMessageCounter);
+		execution.setVariable("ingoingMessageCounter", ingoingMessageCounter);
+		expectedMessageCounter = execution.getVariable("expectedMessageCounter",Integer.class);
 
 		I4_0_message readMessage_I40_messageObject = MsgParticipantServices.getDefault_I40_MessageObject(DelegateCreateCFP.I40_messageOperation);
 
@@ -41,16 +44,24 @@ public class DelegateWaitForConfirmation implements JavaDelegate {
 							execution.getVariableInstance("role").getTextValue());
 		
 		if(readMessage_I40_messageObject.type.getValue().compareTo(MessageType.confirming.toString()) == 0){
+			confirmationCounter = execution.getVariable("confirmationCounter",Integer.class);
 			confirmationCounter++;
-			confirmedProposals += UIServices.displayProposal(readMessage_I40_messageObject) + "\n\n"; 
-		} else if (readMessage_I40_messageObject.type.getValue().compareTo(MessageType.refusal.toString()) == 0){
-			refusalCounter++;
-		}
+			execution.setVariable("confirmationCounter", confirmationCounter);
 
+			//Create string with confirmed proposals
+			selectedProposals = execution.getVariable("form_selectedProposal",String.class);
+			selectedProposals += UIServices.displayProposal(readMessage_I40_messageObject) + "\n\n"; 
+			execution.setVariable("form_selectedProposal", selectedProposals);
+
+		} else if (readMessage_I40_messageObject.type.getValue().compareTo(MessageType.refusal.toString()) == 0){
+			refusalCounter = execution.getVariable("refusalCounter",Integer.class);
+			refusalCounter++;
+			execution.setVariable("refusalCounter", refusalCounter);
+		}
+		
 		//set the delegate to an end when all expected proposals are collected
-		if (DelegateChooseProposal.expectedMessageCounter == ingoingMessageCounter){
+		if (expectedMessageCounter == ingoingMessageCounter){
 			execution.setVariable("collectConfirmations", "end");
-			execution.setVariable("form_selectedProposal", confirmedProposals);
 			execution.setVariable("form_selectionStrategy", DelegateCreateCFP.selectionStrategy);
     	}
 

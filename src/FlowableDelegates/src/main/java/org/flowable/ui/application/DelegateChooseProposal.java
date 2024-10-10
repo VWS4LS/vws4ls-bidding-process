@@ -54,7 +54,10 @@ public class DelegateChooseProposal implements JavaDelegate {
                 msgType = MessageType.offer_acceptance.toString();
 
                 //counting the accepted proposals for later checking of confirmation status
+                //counting the incomming confirmations
+		        expectedMessageCounter = execution.getVariable("expectedMessageCounter",Integer.class);
                 expectedMessageCounter++; 
+                execution.setVariable("expectedMessageCounter", expectedMessageCounter);
             } else {
                 msgType = MessageType.offer_rejection.toString();
             }
