@@ -8,6 +8,7 @@ import org.aas.enumeration.MessageType;
 import org.aas.message.I4_0_message;
 import org.aas.services.MsgParticipantServices;
 import org.aas.services.SimpleServices;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.SerializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
@@ -21,11 +22,20 @@ import org.springframework.stereotype.Service;
 @Service("DelegateEvaluateAnswer")
 public class DelegateEvaluateAnswer implements JavaDelegate {
 	
+	private I4_0_message readAnswerMessage_I40_messageObject = new I4_0_message();
+
 	@Override
     public void execute(DelegateExecution execution) {
 		
-        I4_0_message readAnswerMessage_I40_messageObject = MsgParticipantServices.getDefault_I40_MessageObject(DelegateReadMessage.I40_messageOperation);
-
+		//initialize a new message object with the message template and fill in the values in the next step
+		try {
+			readAnswerMessage_I40_messageObject.deserializeMsg(execution.getVariable("msgTemplate", String.class));
+			
+		} catch (DeserializationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
 		//complete message object with frame values
 		readAnswerMessage_I40_messageObject.frameCollection = (DefaultSubmodelElementCollection) readAnswerMessage_I40_messageObject.ov_frame.getValue();
 		readAnswerMessage_I40_messageObject = MsgParticipantServices.setFrameElements(readAnswerMessage_I40_messageObject, 

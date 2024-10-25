@@ -8,6 +8,7 @@ import org.aas.message.I4_0_message;
 import org.aas.services.MsgParticipantServices;
 import org.aas.services.SimpleServices;
 import org.aas.services.UIServices;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.SerializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 @Service("DelegateCollectProposals")
 public class DelegateCollectProposals implements JavaDelegate {
 
+	private I4_0_message readMessage_I40_messageObject = new I4_0_message();
 
 	@Override
     public void execute(DelegateExecution execution) {
@@ -31,7 +33,8 @@ public class DelegateCollectProposals implements JavaDelegate {
 		execution.setVariable("proposalCounter", proposalCounter);
 
 		//set the delegate to an end when all expected proposals are collected
-		if (DelegateSendOutCallForProposal.receiverCount == proposalCounter){
+		int receiverCount = execution.getVariable("receiverCounter", Integer.class);
+		if (receiverCount == proposalCounter){
 			execution.setVariable("collectProposal", "end");
     	}
 		String formVariable = "form_proposal" + proposalCounter;
@@ -39,7 +42,15 @@ public class DelegateCollectProposals implements JavaDelegate {
 		String messageType = execution.getVariableInstance("type").getTextValue();
 		switch (messageType) {
 			case "offer":
-				I4_0_message readMessage_I40_messageObject = MsgParticipantServices.getDefault_I40_MessageObject(DelegateCreateCFP.I40_messageOperation);
+
+				//initialize a new message object with the message template and fill the values in the next step
+				try {
+					readMessage_I40_messageObject.deserializeMsg(execution.getVariable("msgTemplate", String.class));
+					
+				} catch (DeserializationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				//complete message object with frame values
 				readMessage_I40_messageObject.frameCollection = (DefaultSubmodelElementCollection) readMessage_I40_messageObject.ov_frame.getValue();
@@ -105,11 +116,11 @@ public class DelegateCollectProposals implements JavaDelegate {
 				break;
 
 			case "refusal":
-				execution.setVariable(formVariable, "Service provider refused call for proposal.");
+				execution.setVariable(formVariable, "Service provider" + proposalCounter + " refused call for proposal.");
 				break;
 
 			case "not understood":
-				execution.setVariable(formVariable, "Service provider did not understand call for proposal.");
+				execution.setVariable(formVariable, "Service provider" + proposalCounter + " did not understand call for proposal.");
 				break;
 		
 			default:

@@ -1,5 +1,6 @@
 package org.flowable.ui.application;
 
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.OperationVariable;
 import org.aas.message.I4_0_message;
 import org.aas.services.*;
@@ -16,7 +17,7 @@ public class DelegateSendOutCallForProposal implements JavaDelegate {
 	//AAS components interface variables
 	private final String AAS_REGISTRYPATH = System.getenv().get("AAS_REGISTRY_URL");
 	private final String SM_REGISTRYPATH = System.getenv().get("SM_REGISTRY_URL");	
-	public static int receiverCount = 0;
+	private int receiverCount = 0;
 	
 	@Override
     public void execute(DelegateExecution execution) {
@@ -24,14 +25,23 @@ public class DelegateSendOutCallForProposal implements JavaDelegate {
 		I4_0_message I40_messageObject = new I4_0_message();
 		List<String> aasEndpointList = new ArrayList<>();
 		List<ArrayList<String>> receiverEndpoints = new ArrayList<>();
-		
 
-		I40_messageObject = DelegateCreateCFP.I40_messageObject;
+		//initialize a new message object with the message template and fill in the values in the next step
+		try {
+			I40_messageObject.deserializeMsg(execution.getVariable("outgoingMessage", String.class));
+                
+            } catch (DeserializationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+        }
+		
 		aasEndpointList = DescriptorServices.getAASEndpointList(AAS_REGISTRYPATH);
 		receiverEndpoints = MsgParticipantServices.getProtocolSpecificReceiverEndpoints(aasEndpointList, SM_REGISTRYPATH, "ServiceProvider", "VDI_2193-2");
 
 		//Display found receivers for user ans send operation to service providers
 		receiverCount = receiverEndpoints.size();
+		execution.setVariable("receiverCounter", receiverCount);
+		
 		for (int i = 1; i <= receiverCount; i++) {
 			String receiverAdressInformation = UIServices.getReceiverInformation(receiverEndpoints.get(i-1));
 			String receiverEndpoint = receiverEndpoints.get(i-1).get(0);

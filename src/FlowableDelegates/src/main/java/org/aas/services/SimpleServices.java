@@ -3,6 +3,8 @@ package org.aas.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aas.message.I4_0_message;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.SerializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonSerializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
@@ -73,6 +75,22 @@ public class SimpleServices {
     public static String[] deserializeCollectedObjects(String collectedObjects){
         String[] splittedObjects = collectedObjects.split("NEXT");
         return splittedObjects;
+    }
+
+    public static I4_0_message[] splitMsgStringListIntoMsgObjectList (String[] msgStringList){
+        I4_0_message[] msgObjectList = new I4_0_message[msgStringList.length];
+        for (int i = 0; i < msgStringList.length; i++) {
+                String proposalString = msgStringList[i];
+                msgObjectList[i] = new I4_0_message();
+                try {
+                    msgObjectList[i].deserializeMsg(proposalString);
+                    
+                } catch (DeserializationException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            } 
+            return msgObjectList;
     }
 
     

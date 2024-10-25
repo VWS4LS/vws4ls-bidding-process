@@ -5,6 +5,7 @@ import java.util.*;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.SerializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultAssetAdministrationShellDescriptor;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultOperation;
@@ -25,9 +26,8 @@ public class DelegateCreateCFP implements JavaDelegate {
 	private final String SM_REGISTRYPATH = System.getenv().get("SM_REGISTRY_URL");
 	private String semanticID_SMMessageParticipant = "http://vws4ls.com/sample/submodel/type/messageParticipant/1/0/Submodel";
 	private DefaultOperation userOperation = new DefaultOperation();
-	public static DefaultOperation I40_messageOperation = new DefaultOperation();
-	public static I4_0_message I40_messageObject = new I4_0_message();
-	public static String selectionStrategy;
+	private DefaultOperation I40_messageOperation = new DefaultOperation();
+	private I4_0_message I40_messageObject = new I4_0_message();
 	
 	@Override
     public void execute(DelegateExecution execution) {
@@ -35,7 +35,6 @@ public class DelegateCreateCFP implements JavaDelegate {
 		List<String> aasEndpointList = new ArrayList<>();
 		DefaultAssetAdministrationShellDescriptor aasDescriptor = new DefaultAssetAdministrationShellDescriptor();
 		String requestingAASID = execution.getVariableInstance("reqAasId").getTextValue();
-		selectionStrategy = execution.getVariableInstance("proposalSelectionStrategy").getTextValue();
 
 		//get AAS-Endpoint	
 		aasDescriptor = RegistryAPI.getAASDescriptorByAASID(AAS_REGISTRYPATH, requestingAASID);		
@@ -47,6 +46,14 @@ public class DelegateCreateCFP implements JavaDelegate {
 
 		//fill default message object for current delegate
 		I40_messageObject = MsgParticipantServices.getDefault_I40_MessageObject(I40_messageOperation);
+
+		//store empty message object as template for further delegates 
+		try {
+			execution.setVariable("msgTemplate", I40_messageObject.serialize());
+		} catch (SerializationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		//Get interactionElements from operation "startBiddingProcess"
 		I40_messageObject = MsgParticipantServices.setOperationDefinedInteractionElements(userOperation, I40_messageObject);
@@ -82,6 +89,7 @@ public class DelegateCreateCFP implements JavaDelegate {
 													SemanticProtocol.VDI_2193_2.toString(), 
 													"ServiceRequester");
 
+		System.out.println(("Execution ID: " + execution.getProcessInstanceId()));
 
 		execution.setVariable("form_interactionElements_SubmodelReferences", UIServices.getSMReferences(I40_messageObject.submodelReferences));
 		execution.setVariable("form_interactionElements_DataElements", UIServices.getSMDataElements(I40_messageObject.dataElements));
@@ -94,6 +102,13 @@ public class DelegateCreateCFP implements JavaDelegate {
 		execution.setVariable("form_replyBy", I40_messageObject.replyBy.getValue());
 		execution.setVariable("form_semanticProtocol", I40_messageObject.semanticProtocol.getValue());
 		execution.setVariable("form_role", I40_messageObject.role.getValue());
+
+		try {
+			execution.setVariable("outgoingMessage", I40_messageObject.serialize());
+		} catch (SerializationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 				
     } 
 }

@@ -4,6 +4,7 @@ import org.aas.enumeration.MessageType;
 import org.aas.message.I4_0_message;
 import org.aas.services.MsgParticipantServices;
 import org.aas.services.UIServices;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollection;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
@@ -17,10 +18,14 @@ public class DelegateWaitForConfirmation implements JavaDelegate {
 	private int confirmationCounter = 0;
 	private int ingoingMessageCounter = 0;
 	private int expectedMessageCounter = 0;
-	private static String selectedProposals = "";
+	private String selectedProposals = "";
+	private I4_0_message readMessage_I40_messageObject = new I4_0_message();
+
 
 	@Override
     public void execute(DelegateExecution execution) {
+
+		String selectionStrategy = execution.getVariableInstance("proposalSelectionStrategy").getTextValue();
 
 		//counting the incomming confirmations
 		ingoingMessageCounter = execution.getVariable("ingoingMessageCounter",Integer.class);
@@ -28,7 +33,14 @@ public class DelegateWaitForConfirmation implements JavaDelegate {
 		execution.setVariable("ingoingMessageCounter", ingoingMessageCounter);
 		expectedMessageCounter = execution.getVariable("expectedMessageCounter",Integer.class);
 
-		I4_0_message readMessage_I40_messageObject = MsgParticipantServices.getDefault_I40_MessageObject(DelegateCreateCFP.I40_messageOperation);
+		//initialize a new message object with the message template and fill in the values in the next step
+		try {
+			readMessage_I40_messageObject.deserializeMsg(execution.getVariable("msgTemplate", String.class));
+			
+		} catch (DeserializationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		//complete message object with frame values
 		readMessage_I40_messageObject.frameCollection = (DefaultSubmodelElementCollection) readMessage_I40_messageObject.ov_frame.getValue();
@@ -62,7 +74,7 @@ public class DelegateWaitForConfirmation implements JavaDelegate {
 		//set the delegate to an end when all expected proposals are collected
 		if (expectedMessageCounter == ingoingMessageCounter){
 			execution.setVariable("collectConfirmations", "end");
-			execution.setVariable("form_selectionStrategy", DelegateCreateCFP.selectionStrategy);
+			execution.setVariable("form_selectionStrategy", selectionStrategy);
     	}
 
 		execution.setVariable("form_status", "There are " + confirmationCounter + " of " + ingoingMessageCounter + " proposals confirmend and " + refusalCounter + " refused.");

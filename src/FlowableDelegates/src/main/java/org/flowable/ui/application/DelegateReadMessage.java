@@ -29,7 +29,7 @@ public class DelegateReadMessage implements JavaDelegate {
 	private final String AAS_REGISTRYPATH = System.getenv().get("AAS_REGISTRY_URL");
 	private final String SM_REGISTRYPATH = System.getenv().get("SM_REGISTRY_URL");
 	private String semanticID_SMMessageParticipant = "http://vws4ls.com/sample/submodel/type/messageParticipant/1/0/Submodel";
-	public static DefaultOperation I40_messageOperation = new DefaultOperation();
+	private DefaultOperation I40_messageOperation = new DefaultOperation();
 	private I4_0_message readMessage_I40_messageObject;
 	private DefaultOperation determineFeasibleScopeOperation = new DefaultOperation();
 
@@ -44,12 +44,20 @@ public class DelegateReadMessage implements JavaDelegate {
 		aasDescriptor = RegistryAPI.getAASDescriptorByAASID(AAS_REGISTRYPATH, requestedAASID);		
 		aasEndpointList = DescriptorServices.getAASEndpointsFromDescriptor(aasDescriptor);
 
-		//Read the operations "determineFeasibleScope" and "newMessage" to get basic configuration data of operation variables
+		//Read the operation "newMessage" to get basic configuration data of operation variables
 		determineFeasibleScopeOperation = OperationServices.getOperationDataStructure(aasEndpointList, SM_REGISTRYPATH, semanticID_SMMessageParticipant, "determineFeasibleScope");
 		I40_messageOperation = OperationServices.getOperationDataStructure(aasEndpointList, SM_REGISTRYPATH, semanticID_SMMessageParticipant, "newMessage");
 
 		//fill default message object for current delegate
 		readMessage_I40_messageObject = MsgParticipantServices.getDefault_I40_MessageObject(I40_messageOperation);
+
+		//store empty message object as template for further delegates 
+		try {
+			execution.setVariable("msgTemplate", readMessage_I40_messageObject.serialize());
+		} catch (SerializationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		//complete message object with frame values
 		readMessage_I40_messageObject.frameCollection = (DefaultSubmodelElementCollection) readMessage_I40_messageObject.ov_frame.getValue();
