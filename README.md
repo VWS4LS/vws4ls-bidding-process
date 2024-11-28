@@ -77,14 +77,14 @@ Import the four flows from the directory `deploy/config/node-red` into your Node
 **Import Flowable apps**
 Go to the Apps tab in Flowable and import the two zip folders from the directory `deploy/config/flowable` into Flowable (see [Fig. 2][fig_importFlowableApps]). 
 
-[fig_importFlowableApps]: ./images/ImportFlowableApps.png "Import of Flowable Apps"
-![Fig. 2](./images/ImportFlowableApps.png)
+[fig_importFlowableApps]: ./images/ImportFlowableApps.PNG "Import of Flowable Apps"
+![Fig. 2](./images/ImportFlowableApps.PNG)
 Fig. 2: Import of Flowable Apps
 
 Then publish the apps. Therfore, click on one app, for example the Service Requester, and click on `Publish`. Do the same for the Service Provider. After the import process, the associated `Processes` and `Forms` can be seen in the tabs of the same name (see [Fig. 3][fig_publishFlowableApps]). 
 
-[fig_publishFlowableApps]: ./images/PublishFlowableApps.png "Publish of Flowable Apps"
-![Fig. 3](./images/PublishFlowableApps.png)
+[fig_publishFlowableApps]: ./images/PublishFlowableApps.PNG "Publish of Flowable Apps"
+![Fig. 3](./images/PublishFlowableApps.PNG)
 Fig. 3: Publish of Flowable Apps
 
 #### Start a bidding process <a id="startBiddingProcess"></a>
