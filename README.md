@@ -81,11 +81,19 @@ Go to the Apps tab in Flowable and import the two zip folders from the directory
 ![Fig. 2](./images/ImportFlowableApps.PNG)
 Fig. 2: Import of Flowable Apps
 
-Then publish the apps. Therfore, click on one app, for example the Service Requester, and click on `Publish`. Do the same for the Service Provider. After the import process, the associated `Processes` and `Forms` can be seen in the tabs of the same name (see [Fig. 3][fig_publishFlowableApps]). 
+Then publish the apps. Therfore, click on one app, for example the Service Requester, and click on `Publish` (see [Fig. 3][fig_publishFlowableApps]). Do the same for the Service Provider. After the import process, the associated `Processes` and `Forms` can be seen in the tabs of the same name (see [Fig. 4][fig_processesFlowable] and [Fig. 5][fig_formsFlowable]). 
 
 [fig_publishFlowableApps]: ./images/PublishFlowableApps.PNG "Publish of Flowable Apps"
 ![Fig. 3](./images/PublishFlowableApps.PNG)
 Fig. 3: Publish of Flowable Apps
+
+[fig_processesFlowable]: ./images/ProcessesFlowable.PNG "Processes in Flowable"
+![Fig. 4](./images/ProcessesFlowable.PNG)
+Fig. 4: Processes in Flowable
+
+[fig_formsFlowable]: ./images/FormsFlowable.PNG "Forms in Flowable"
+![Fig. 5](./images/FormsFlowable.PNG)
+Fig. 5: Forms in Flowable
 
 #### Start a bidding process <a id="startBiddingProcess"></a>
 
