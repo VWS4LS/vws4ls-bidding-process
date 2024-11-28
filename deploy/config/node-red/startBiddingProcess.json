@@ -1,0 +1,152 @@
+[
+    {
+        "id": "f547304058c676e8",
+        "type": "tab",
+        "label": "startBiddingProcess",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "de70bef7c1dbb92c",
+        "type": "http in",
+        "z": "f547304058c676e8",
+        "name": "Method StartBiddingProcess",
+        "url": "/aasCommunicationManager/startBiddingProcess",
+        "method": "post",
+        "upload": true,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 220,
+        "wires": [
+            [
+                "b930d288d2c84312",
+                "66a177a4670dd457"
+            ]
+        ]
+    },
+    {
+        "id": "c32befd7b6cc86b2",
+        "type": "http response",
+        "z": "f547304058c676e8",
+        "name": "response",
+        "statusCode": "",
+        "headers": {},
+        "x": 1240,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "70b82ff4c7165066",
+        "type": "http request",
+        "z": "f547304058c676e8",
+        "name": "Start Flowable Process Instance",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://flowable:8080/flowable-ui/process-api/runtime/process-instances",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "basic",
+        "senderr": false,
+        "headers": [],
+        "x": 970,
+        "y": 220,
+        "wires": [
+            [
+                "e0e1203f768bed99",
+                "c32befd7b6cc86b2"
+            ]
+        ]
+    },
+    {
+        "id": "85e63b0406afef26",
+        "type": "debug",
+        "z": "f547304058c676e8",
+        "name": "Response Flowable",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1110,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "e0e1203f768bed99",
+        "type": "json",
+        "z": "f547304058c676e8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": true,
+        "x": 930,
+        "y": 320,
+        "wires": [
+            [
+                "85e63b0406afef26"
+            ]
+        ]
+    },
+    {
+        "id": "b9372de8b94a3cd5",
+        "type": "debug",
+        "z": "f547304058c676e8",
+        "name": "JSON Object",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "b930d288d2c84312",
+        "type": "debug",
+        "z": "f547304058c676e8",
+        "name": "Request Body AAS-Server",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 360,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "66a177a4670dd457",
+        "type": "function",
+        "z": "f547304058c676e8",
+        "name": "Transfer AAS Payload to Flowable Payload",
+        "func": "//create new Object variable\nvar newJsonObject = {};\n//create new Object for InputVariable\nvar variableName;\nvar variableValue;\n\n//create new Array to insert in Object\nvar variableArray = [];\n\n//set once the Query Parameter\nvariableName = \"reqAasId\";\nvariableValue = msg.req.query.aasId;\n\nvar inputVariableObject = {\n    name: variableName,\n    value: variableValue\n}\nvariableArray.push(inputVariableObject);\n\nfor (var i = 0; i < msg.payload.length; i++){\n\n      if (msg.payload[i].value.modelType == \"SubmodelElementCollection\"){\n        for (var element = 0; element < msg.payload[i].value.value.length; element++){\n            \n            if (msg.payload[i].value.value[element].modelType == \"SubmodelElementCollection\") {\n                for (var nextElement = 0; nextElement < msg.payload[i].value.value[element].value.length; nextElement++) {\n\n                    variableName = msg.payload[i].value.value[element].value[nextElement].idShort;\n                    variableValue = msg.payload[i].value.value[element].value[nextElement].value.keys[0].value;\n\n                    inputVariableObject = {\n                        name: \"submodelReference_\" + variableName,\n                        value: variableValue\n                    }\n    \n                    variableArray.push(inputVariableObject);\n                }\n            } else{\n                variableName = msg.payload[i].value.value[element].idShort;\n                variableValue = msg.payload[i].value.value[element].value;\n\n                inputVariableObject = {\n                    name: variableName,\n                    value: variableValue\n                }\n    \n                variableArray.push(inputVariableObject);\n            }\n        }\n    }\n    else{  \n        variableName = msg.payload[i].value.idShort;\n        variableValue = msg.payload[i].value.value;\n    \n        inputVariableObject = {\n            name: variableName,\n            value: variableValue\n        }\n    \n        variableArray.push(inputVariableObject);\n    }\n}\n\nnewJsonObject = {\n    processDefinitionKey: \"callForProposal\",\n    returnVariables: true,\n    variables: variableArray\n}\n\n//flow.set('reqAAS',msg.req.query);\nmsg.payload = newJsonObject\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 220,
+        "wires": [
+            [
+                "b9372de8b94a3cd5",
+                "70b82ff4c7165066"
+            ]
+        ]
+    }
+]

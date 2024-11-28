@@ -62,8 +62,14 @@ public class DelegateWaitForConfirmation implements JavaDelegate {
 
 			//Create string with confirmed proposals
 			selectedProposals = execution.getVariable("form_selectedProposal",String.class);
-			selectedProposals += UIServices.displayProposal(readMessage_I40_messageObject) + "\n\n"; 
-			execution.setVariable("form_selectedProposal", selectedProposals);
+			if(selectedProposals.compareTo("null")==0){
+				selectedProposals = UIServices.displayProposal(readMessage_I40_messageObject) + "\n\n";
+				execution.setVariable("form_selectedProposal", selectedProposals);
+			} else{
+				selectedProposals += UIServices.displayProposal(readMessage_I40_messageObject) + "\n\n"; 
+				execution.setVariable("form_selectedProposal", selectedProposals);
+			}
+			
 
 		} else if (readMessage_I40_messageObject.type.getValue().compareTo(MessageType.refusal.toString()) == 0){
 			refusalCounter = execution.getVariable("refusalCounter",Integer.class);

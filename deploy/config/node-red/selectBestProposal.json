@@ -1,0 +1,132 @@
+[
+    {
+        "id": "122781051d45a7a2",
+        "type": "tab",
+        "label": "selectBestProposal",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9d3b1d30b805be4e",
+        "type": "http in",
+        "z": "122781051d45a7a2",
+        "name": "Method selectProposal",
+        "url": "/aasCommunicationManager/selectBestProposals",
+        "method": "post",
+        "upload": true,
+        "swaggerDoc": "",
+        "x": 420,
+        "y": 220,
+        "wires": [
+            [
+                "62c10b8f366f0a31",
+                "383ad0a0ab641bc2"
+            ]
+        ]
+    },
+    {
+        "id": "62c10b8f366f0a31",
+        "type": "function",
+        "z": "122781051d45a7a2",
+        "name": "Filter for complete proposals",
+        "func": "var filteredServiceProviders = new Array();\n\n\nfor (var proposal of msg.payload)\n{\n    var isValidServiceProvider = false;\n    var validProposalsOfMachine = new Array();\n    for( var currentProposal of proposal.Proposal.Proposals) {\n       var isValidProposal = true; \n       for( var process in currentProposal.CapabilityCheckResults )\n       {\n        \n           if (currentProposal.CapabilityCheckResults[process].success != true )\n           {\n               isValidProposal = false;\n           }\n       }\n       if (isValidProposal ) \n       {\n           validProposalsOfMachine.push(currentProposal);\n           isValidServiceProvider = true;\n       } \n    }\n    if (isValidServiceProvider )\n    {\n        proposal.Proposal.Proposals = validProposalsOfMachine; \n        filteredServiceProviders.push(proposal);\n    }\n}\nmsg.payload = filteredServiceProviders;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 220,
+        "wires": [
+            [
+                "061218bc6251341d",
+                "190bf6bc8eb04b0f"
+            ]
+        ]
+    },
+    {
+        "id": "061218bc6251341d",
+        "type": "function",
+        "z": "122781051d45a7a2",
+        "name": "selectBestProposal",
+        "func": "var filteredServiceProviders = new Array();\n\nvar currentDuration = -1;\nvar bestProposal = Object();\n\nfor (var proposal of msg.payload)\n{\n    for (var proposalEntry of proposal.Proposal.Proposals)\n        if (currentDuration < 0 || proposalEntry.Duration < currentDuration )\n    {\n        currentDuration = proposalEntry.Duration;\n        bestProposal = proposal;\n    }\n\n\n}\nmsg.payload = Array();\nmsg.payload.push( bestProposal );\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 300,
+        "wires": [
+            [
+                "70c578c689e30c3d",
+                "a8a2d8f1195302bd"
+            ]
+        ]
+    },
+    {
+        "id": "70c578c689e30c3d",
+        "type": "debug",
+        "z": "122781051d45a7a2",
+        "name": "debug selectedMachine",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1330,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "a8a2d8f1195302bd",
+        "type": "http response",
+        "z": "122781051d45a7a2",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1260,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "383ad0a0ab641bc2",
+        "type": "debug",
+        "z": "122781051d45a7a2",
+        "name": "request input ",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 650,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "190bf6bc8eb04b0f",
+        "type": "debug",
+        "z": "122781051d45a7a2",
+        "name": "Complete proposals",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1050,
+        "y": 180,
+        "wires": []
+    }
+]

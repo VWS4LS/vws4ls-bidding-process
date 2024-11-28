@@ -1,0 +1,438 @@
+[
+    {
+        "id": "ec6d4ff941a3df07",
+        "type": "tab",
+        "label": "newMessage",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "33f5d5909665a058",
+        "type": "http in",
+        "z": "ec6d4ff941a3df07",
+        "name": "",
+        "url": "/aasCommunicationManager/newMessage",
+        "method": "post",
+        "upload": true,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 360,
+        "wires": [
+            [
+                "e4cf0ddfea30bdef",
+                "3cd51687fd626821"
+            ]
+        ]
+    },
+    {
+        "id": "34819fbf8651798a",
+        "type": "http response",
+        "z": "ec6d4ff941a3df07",
+        "name": "response",
+        "statusCode": "",
+        "headers": {},
+        "x": 1700,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "d0c8900130c78428",
+        "type": "http request",
+        "z": "ec6d4ff941a3df07",
+        "name": "start process instance",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://flowable:8080/flowable-ui/process-api/runtime/process-instances",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "basic",
+        "senderr": false,
+        "headers": [],
+        "x": 1480,
+        "y": 160,
+        "wires": [
+            [
+                "34819fbf8651798a",
+                "3d67e8c365bbf119"
+            ]
+        ]
+    },
+    {
+        "id": "7833e6e17356012f",
+        "type": "debug",
+        "z": "ec6d4ff941a3df07",
+        "name": "Response Flowable",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1490,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "3d67e8c365bbf119",
+        "type": "json",
+        "z": "ec6d4ff941a3df07",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": true,
+        "x": 1530,
+        "y": 200,
+        "wires": [
+            [
+                "7833e6e17356012f"
+            ]
+        ]
+    },
+    {
+        "id": "2d11e4d8dc54f4b8",
+        "type": "debug",
+        "z": "ec6d4ff941a3df07",
+        "name": "Array",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 550,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "3cd51687fd626821",
+        "type": "function",
+        "z": "ec6d4ff941a3df07",
+        "name": "Transfer AAS Payload to array",
+        "func": "let resultsArray = [];\n\nfunction findNestedElementValue(element, foundFrame = false) {\n    if (Array.isArray(element)) {\n        element.forEach(item => findNestedElementValue(item, foundFrame));\n    } else if (typeof element === 'object' && element.idShort) {\n        \n        if (element.idShort === 'submodelReferences' && element.value) {\n            element.value.forEach(subElement => {\n                if (subElement.modelType === 'ReferenceElement' && subElement.value && Array.isArray(subElement.value.keys)) {\n                    subElement.value.keys.forEach(key => {\n                        resultsArray.push({ \"name\": \"submodelReference_\" + subElement.idShort, \"value\": key.value });\n                    });\n                }\n            });\n        }\n\n        if (element.idShort === 'dataElements' && element.value) {\n            element.value.forEach(subElement => {\n                if (subElement.modelType === 'Property') {\n                    resultsArray.push({ \"name\": \"dataElement_\" + subElement.idShort, \"value\": subElement.value });\n                }\n            });\n        }\n\n        if (element.idShort === 'frame'){\n                foundFrame = true;\n        }\n\n        if ((element.idShort === 'type' || element.idShort === 'semanticProtocol' || element.idShort === 'role' || element.idShort === 'sender' || element.idShort === 'receiver' || element.idShort === 'conversationId' || element.idShort === 'messageId' || element.idShort === 'replyTo' || element.idShort === 'replyBy') && foundFrame) {\n            let key = element.idShort;\n            resultsArray.push({ \"name\": key, \"value\": element.value });\n            flow.set(key, element.value);\n            return;\n        }\n\n        Object.keys(element).forEach(key => {\n            findNestedElementValue(element[key], foundFrame);\n        });\n    }\n}\n\nfindNestedElementValue(msg.payload[0].value);\nfindNestedElementValue(msg.payload[1].value);\n\nflow.set('resultsArray', resultsArray);\nmsg.payload = resultsArray\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 360,
+        "wires": [
+            [
+                "2d11e4d8dc54f4b8",
+                "1ebfeca2c01bf7c8"
+            ]
+        ]
+    },
+    {
+        "id": "e4cf0ddfea30bdef",
+        "type": "debug",
+        "z": "ec6d4ff941a3df07",
+        "name": "Request Body AAS-Server",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 220,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "1ebfeca2c01bf7c8",
+        "type": "switch",
+        "z": "ec6d4ff941a3df07",
+        "name": "MessageType",
+        "property": "type",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "call_for_proposals",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "offer",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "refusal",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "not understood",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "offer_acceptance",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "offer_rejection",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "confirming",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 8,
+        "x": 820,
+        "y": 360,
+        "wires": [
+            [
+                "83df9e09458cd7a6"
+            ],
+            [
+                "f00f136d1ceebf85"
+            ],
+            [
+                "f00f136d1ceebf85"
+            ],
+            [
+                "f00f136d1ceebf85"
+            ],
+            [
+                "f00f136d1ceebf85"
+            ],
+            [
+                "f00f136d1ceebf85"
+            ],
+            [
+                "f00f136d1ceebf85"
+            ],
+            [
+                "1f74fa4ef47eb733"
+            ]
+        ]
+    },
+    {
+        "id": "1f74fa4ef47eb733",
+        "type": "debug",
+        "z": "ec6d4ff941a3df07",
+        "name": "otherwise",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "83df9e09458cd7a6",
+        "type": "function",
+        "z": "ec6d4ff941a3df07",
+        "name": "Transfer AAS Payload to Flowable Payload",
+        "func": "var newJsonObject = {};\nnewJsonObject = {\n    processDefinitionKey: \"calculateProposal\",\n    returnVariables: true,\n    variables: msg.payload\n}\n\n\nmsg.payload = newJsonObject;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1170,
+        "y": 160,
+        "wires": [
+            [
+                "d0c8900130c78428"
+            ]
+        ]
+    },
+    {
+        "id": "a950e2c217a7db1d",
+        "type": "debug",
+        "z": "ec6d4ff941a3df07",
+        "name": "Message Event result",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1760,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "9f6ddc0fe315f710",
+        "type": "http request",
+        "z": "ec6d4ff941a3df07",
+        "name": "get execution ID",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://flowable:8080/flowable-ui/process-api/query/executions",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "basic",
+        "senderr": false,
+        "headers": [],
+        "x": 1380,
+        "y": 320,
+        "wires": [
+            [
+                "691ee305d10f688a",
+                "3b30147edbe69d0e"
+            ]
+        ]
+    },
+    {
+        "id": "f00f136d1ceebf85",
+        "type": "function",
+        "z": "ec6d4ff941a3df07",
+        "name": "write execution msg",
+        "func": "\nvar executionMessage = {};\nexecutionMessage = {\n  messageEventSubscriptionName:flow.get('messageId'),\n  processInstanceId: flow.get('replyTo')\n}\n\nmsg.payload = executionMessage;\n \nreturn msg;\n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1140,
+        "y": 320,
+        "wires": [
+            [
+                "ec3a4dcfe61475ed",
+                "9f6ddc0fe315f710"
+            ]
+        ]
+    },
+    {
+        "id": "3b30147edbe69d0e",
+        "type": "debug",
+        "z": "ec6d4ff941a3df07",
+        "name": "get Execution ID",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1400,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "ec3a4dcfe61475ed",
+        "type": "debug",
+        "z": "ec6d4ff941a3df07",
+        "name": "query Execution ID",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1190,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "691ee305d10f688a",
+        "type": "function",
+        "z": "ec6d4ff941a3df07",
+        "name": "write event msg",
+        "func": "flow.set('executionId', msg.payload.data[0].id);\n\nvar url = \"http://flowable:8080/flowable-ui/process-api/runtime/executions/\" + flow.get('executionId');\nmsg.url = url;\n\nlet resultsArray = [];\n\nfor (var i = 0; i < flow.get(\"resultsArray\").length; i++){\n  resultsArray.push(flow.get(\"resultsArray\")[i]);\n}\n\nvar newJsonObject = {};\nnewJsonObject = \n{\n  \"action\":\"messageEventReceived\",\n  \"messageName\": flow.get('messageId'),\n  \"variables\": resultsArray\n}\n\nmsg.payload = newJsonObject;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1580,
+        "y": 320,
+        "wires": [
+            [
+                "320aa92275dd5261",
+                "7b7910ce3e18f714"
+            ]
+        ]
+    },
+    {
+        "id": "320aa92275dd5261",
+        "type": "http request",
+        "z": "ec6d4ff941a3df07",
+        "name": "send Message Event",
+        "method": "PUT",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "basic",
+        "senderr": false,
+        "headers": [],
+        "x": 1780,
+        "y": 320,
+        "wires": [
+            [
+                "45faef990ec75eb3",
+                "a950e2c217a7db1d"
+            ]
+        ]
+    },
+    {
+        "id": "45faef990ec75eb3",
+        "type": "http response",
+        "z": "ec6d4ff941a3df07",
+        "name": "response",
+        "statusCode": "",
+        "headers": {},
+        "x": 2000,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "7b7910ce3e18f714",
+        "type": "debug",
+        "z": "ec6d4ff941a3df07",
+        "name": "event message",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1750,
+        "y": 260,
+        "wires": []
+    }
+]

@@ -31,7 +31,7 @@ Option 2 can be implemented after the instructions of option 1 have been execute
 ##### Docker
 A [Docker Engine](https://docs.docker.com/engine/install/) should be installed on your computer.
 
-Download the flowable Docker image:
+Download the Flowable Docker image:
 
     docker pull ghcr.io/vws4ls/vws4ls-bidding-process/deploy-flowable:latest
 
@@ -60,7 +60,7 @@ Node-Red: <http://localhost:1880/>
 Flowable: <http://localhost:8081/flowable-ui/>
 
 
-The default credentials for FLowable are as follows:
+The default credentials for Flowable are as follows:
     
     Name: admin
     Password: test
@@ -69,16 +69,31 @@ The default credentials for FLowable are as follows:
 
 #### Initialize Flowable and Node-Red
 
-After starting the Docker containers for the first time you have to upload the configuration files of the ... folder into the software applications. How this is done is shown in the following video instruction.
+When the containers are started for the first time, Node-Red and Flowable must be initialized. For this go to the directory `deploy/config` and do the following steps.
 
+**Import Node-Red flows**
+Import the four flows from the directory `deploy/config/node-red` into your Node-Red server.
+
+**Import Flowable apps**
+Go to the Apps tab in Flowable and import the two zip folders from the directory `deploy/config/flowable` into Flowable (see [Fig. 2][fig_importFlowableApps]). 
+
+[fig_importFlowableApps]: ./images/ImportFlowableApps.png "Import of Flowable Apps"
+![Fig. 2](./images/ImportFlowableApps.png)
+Fig. 2: Import of Flowable Apps
+
+Then publish the apps. Therfore, click on one app, for example the Service Requester, and click on `Publish`. Do the same for the Service Provider. After the import process, the associated `Processes` and `Forms` can be seen in the tabs of the same name (see [Fig. 3][fig_publishFlowableApps]). 
+
+[fig_publishFlowableApps]: ./images/PublishFlowableApps.png "Publish of Flowable Apps"
+![Fig. 3](./images/PublishFlowableApps.png)
+Fig. 3: Publish of Flowable Apps
 
 #### Start a bidding process <a id="startBiddingProcess"></a>
 
-To start a bidding process at least one `Service Requester` AAS and `Service Provider` AAS must be stored in the `AAS-Repository`. For this example AAS are sotred in the directoy `deploy/aasx`.
+To start a bidding process at least one `Service Requester` AAS and `Service Provider` AAS, which need to implement the Message Participant Submodel, must be stored in the `AAS-Repository`. For this example AAS are stored in the directoy `deploy/aasx`.
 
-The following video shows how the software applications work together.
+(tbd.) The following video shows how the software applications work together.
 
-The demonstrator was developed for a special use case. If you want to change something you have to change the code of the flowable delegates. To do so, you have to follow the instructions of option 2.
+The demonstrator was developed for a special use case. If you want to change something you have to change the code of the Flowable delegates. To do so, you have to follow the instructions of option 2.
 
 ## Option 2: Expand the code of the demonstrator
 
