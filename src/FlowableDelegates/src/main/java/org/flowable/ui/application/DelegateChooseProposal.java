@@ -5,6 +5,7 @@ import org.aas.http.api.NodeRedAPI;
 import org.aas.message.I4_0_message;
 import org.aas.services.MsgParticipantServices;
 import org.aas.services.SimpleServices;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.SerializationException;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
@@ -16,6 +17,7 @@ public class DelegateChooseProposal implements JavaDelegate {
     private String[] collectedProposalsString;
 	private I4_0_message[] chooseProposal_I40_messageObjects;
     private int expectedMessageCounter = 0;
+    private boolean messagesReceived = false;
 
 	@Override
     public void execute(DelegateExecution execution) {
@@ -30,19 +32,19 @@ public class DelegateChooseProposal implements JavaDelegate {
         try {
             collectedProposalsString = SimpleServices.deserializeCollectedObjects(execution.getVariable("allCollectedProposals", String.class));
             chooseProposal_I40_messageObjects = new I4_0_message[collectedProposalsString.length];
+            messagesReceived = true;
         } catch (Exception e) {
-            System.out.println("No proposals collected.");
+            messagesReceived = false;
             execution.setVariable("expectedMessageCounter", 0);
             execution.setVariable("form_status", "Only refusals received.");
         }
         
-
         
-        if(expectedMessageCounter != 0){
-
+        if(messagesReceived){
+            
             //convert message string into message objects
-            chooseProposal_I40_messageObjects = SimpleServices.splitMsgStringListIntoMsgObjectList(collectedProposalsString);
-
+            chooseProposal_I40_messageObjects = SimpleServices.splitMsgStringListIntoMsgObjectList(collectedProposalsString);    
+            
             //Invoke AAS operation "selectBestProposals" with input variables
             String output = NodeRedAPI.invokeSelectBestProposals(chooseProposal_I40_messageObjects, selectionStrategy);
 
@@ -53,7 +55,7 @@ public class DelegateChooseProposal implements JavaDelegate {
                 String msgType = "";
                 if(output.contains(proposal.sender.getValue())){
                     msgType = MessageType.offer_acceptance.toString();
-
+                    
                     //counting the accepted proposals for later checking of confirmation status
                     //counting the incomming confirmations
                     expectedMessageCounter = execution.getVariable("expectedMessageCounter",Integer.class);
@@ -62,9 +64,6 @@ public class DelegateChooseProposal implements JavaDelegate {
                 } else {
                     msgType = MessageType.offer_rejection.toString();
                 }
-                
-                proposal = MsgParticipantServices.setFrameElements(proposal);
-                proposal.interactionElementsCollection = proposal.interactionElementsCollection;
 
                 proposal = MsgParticipantServices.setFrameElements(proposal, 
                                 msgType, 
@@ -75,17 +74,17 @@ public class DelegateChooseProposal implements JavaDelegate {
                                 proposal.conversationId.getValue(),
                                 proposal.replyBy.getValue(),
                                 proposal.semanticProtocol.getValue(), 
-                                "ServiceRequester");   
+                                "ServiceRequester"); 
                                 
                 try {
 					String tmpProposals = execution.getVariable("proposalListWithDecision", String.class);
-					tmpProposals = SimpleServices.serializeCollectedObjects(proposal.serialize(), tmpProposals);
+                    tmpProposals = SimpleServices.serializeCollectedObjects(proposal.serialize(), tmpProposals);
 					execution.setVariable("proposalListWithDecision", tmpProposals);
 				} catch (SerializationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
             } 
-        }     
+        } 
     }
 }

@@ -89,8 +89,6 @@ public class DelegateCreateCFP implements JavaDelegate {
 													SemanticProtocol.VDI_2193_2.toString(), 
 													"ServiceRequester");
 
-		System.out.println(("Execution ID: " + execution.getProcessInstanceId()));
-
 		execution.setVariable("form_interactionElements_SubmodelReferences", UIServices.getSMReferences(I40_messageObject.submodelReferences));
 		execution.setVariable("form_interactionElements_DataElements", UIServices.getSMDataElements(I40_messageObject.dataElements));
 		execution.setVariable("form_type", I40_messageObject.type.getValue());

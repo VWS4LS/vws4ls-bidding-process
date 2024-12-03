@@ -1,10 +1,18 @@
 package org.flowable.ui.application;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.aas.enumeration.MessageType;
 import org.aas.message.I4_0_message;
 import org.aas.services.MsgParticipantServices;
+import org.aas.services.SimpleServices;
 import org.aas.services.UIServices;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultReferenceElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollection;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
@@ -54,6 +62,44 @@ public class DelegateWaitForConfirmation implements JavaDelegate {
 							execution.getVariableInstance("replyBy").getTextValue(),
 							execution.getVariableInstance("semanticProtocol").getTextValue(), 
 							execution.getVariableInstance("role").getTextValue());
+
+		//Prepare output for flowable UI
+		List<SubmodelElement> submodelReferencesList = new ArrayList<>();
+		List<SubmodelElement> dataElementsList = new ArrayList<>();
+		Set<String> variableNames = execution.getVariableNames();
+
+		//Map flowable variables to I40_message object
+		for (String name : variableNames){		
+			String idShort = "";
+			String value = "";
+			if (name.contains("submodelReference_")){
+				idShort = execution.getVariableInstance(name).getName().replace("submodelReference_", "");
+				value = execution.getVariableInstance(name).getTextValue();
+				if(value == null){
+					//delete local varibale in flowable because it wont be used in the later process steps
+					execution.removeVariable(name);
+				} else{
+					DefaultReferenceElement submodelReference = new DefaultReferenceElement();
+					submodelReference = SimpleServices.setReferenceElement(idShort, value);
+					submodelReferencesList.add(submodelReference);
+				}
+			}
+			else if(name.contains("dataElement_")){
+				idShort = execution.getVariableInstance(name).getName().replace("dataElement_", "");
+				value = execution.getVariableInstance(name).getTextValue();
+				if(value == null){
+					//delete local varibale in flowable because it wont be used in the later process steps
+					execution.removeVariable(name);
+				} else{
+					DefaultProperty dataElement = new DefaultProperty();
+					dataElement = SimpleServices.setDataElement(idShort, value);
+					dataElementsList.add(dataElement);
+				}
+			}
+			else{}
+		}
+		readMessage_I40_messageObject.submodelReferences.setValue(submodelReferencesList);
+		readMessage_I40_messageObject.dataElements.setValue(dataElementsList);
 		
 		if(readMessage_I40_messageObject.type.getValue().compareTo(MessageType.confirming.toString()) == 0){
 			confirmationCounter = execution.getVariable("confirmationCounter",Integer.class);
@@ -62,7 +108,7 @@ public class DelegateWaitForConfirmation implements JavaDelegate {
 
 			//Create string with confirmed proposals
 			selectedProposals = execution.getVariable("form_selectedProposal",String.class);
-			if(selectedProposals.compareTo("null")==0){
+			if(selectedProposals == null){
 				selectedProposals = UIServices.displayProposal(readMessage_I40_messageObject) + "\n\n";
 				execution.setVariable("form_selectedProposal", selectedProposals);
 			} else{

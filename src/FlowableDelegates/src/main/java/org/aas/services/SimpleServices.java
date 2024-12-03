@@ -83,8 +83,7 @@ public class SimpleServices {
                 String proposalString = msgStringList[i];
                 msgObjectList[i] = new I4_0_message();
                 try {
-                    msgObjectList[i].deserializeMsg(proposalString);
-                    
+                    msgObjectList[i].deserializeMsg(proposalString);                   
                 } catch (DeserializationException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

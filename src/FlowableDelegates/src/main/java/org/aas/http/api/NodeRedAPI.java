@@ -127,7 +127,7 @@ public class NodeRedAPI{
             while ((output = br.readLine()) != null) {
                 response += output;
             }
-            System.out.println("Response of Node-RED invokeOperation: " + response);
+            //System.out.println("Response of Node-RED invokeOperation: " + response);
 
             conn.disconnect();
 

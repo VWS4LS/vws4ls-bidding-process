@@ -64,7 +64,7 @@ public class DelegateEvaluateAnswer implements JavaDelegate {
 			if (name.contains("submodelReference_")){
 				idShort = execution.getVariableInstance(name).getName().replace("submodelReference_", "");
 				value = execution.getVariableInstance(name).getTextValue();
-				if(value.compareTo("")==0){
+				if(value == null){
 					//delete local varibale in flowable because it wont be used in the later process steps
 					execution.removeVariable(name);
 				} else{
@@ -77,7 +77,7 @@ public class DelegateEvaluateAnswer implements JavaDelegate {
 			else if(name.contains("dataElement_")){
 				idShort = execution.getVariableInstance(name).getName().replace("dataElement_", "");
 				value = execution.getVariableInstance(name).getTextValue();
-				if(value.compareTo("")==0){
+				if(value == null){
 					//delete local varibale in flowable because it wont be used in the later process steps
 					execution.removeVariable(name);
 				} else{

@@ -98,7 +98,7 @@
         "type": "function",
         "z": "bce5dbdca5d86a3a",
         "name": "Prepare msg for capbility-check",
-        "func": "let endpoint = new Object();\n\n//endpoint.aasRegistryEndpoint = env.get(\"aasRegistry\");\n//endpoint.submodelRegistryEndpoint = env.get(\"smRegistry\");\n\nmsg.payload.endpoint = env.get(\"aasRegistry\");\nmsg.payload.assetKind = \"instance\";\nmsg.payload.onlyRegardMountedTools= false;\nmsg.payload.machineAasId = msg.machineAasId;\nmsg.payload.username = \"arena2036\";\nmsg.payload.password = \"VWS4LSInfr4structure\";\nreturn msg;",
+        "func": "let endpoint = new Object();\n\n//endpoint.aasRegistryEndpoint = env.get(\"aasRegistry\");\n//endpoint.submodelRegistryEndpoint = env.get(\"smRegistry\");\n\nmsg.payload.endpoint = env.get(\"aasRegistry\");\nmsg.payload.assetKind = \"instance\";\nmsg.payload.onlyRegardMountedTools= false;\nmsg.payload.machineAasId = msg.machineAasId;\n//msg.payload.username = \"arena2036\";\n//msg.payload.password = \"VWS4LSInfr4structure\";\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -664,6 +664,18 @@
         "type": "subflow:bce5dbdca5d86a3a",
         "z": "b5576f0a9b2a139c",
         "name": "Execute capability checks",
+        "env": [
+            {
+                "name": "aasRegistry",
+                "value": "http://environment:8081",
+                "type": "str"
+            },
+            {
+                "name": "smRegistry",
+                "value": "",
+                "type": "str"
+            }
+        ],
         "x": 650,
         "y": 620,
         "wires": [
