@@ -89,8 +89,7 @@ public class DelegateEvaluateAnswer implements JavaDelegate {
 			}
 			else{}
 		}
-		readAnswerMessage_I40_messageObject.submodelReferences.setValue(submodelReferencesList);
-		readAnswerMessage_I40_messageObject.dataElements.setValue(dataElementsList);
+		readAnswerMessage_I40_messageObject.transferInteractionElementsIntoMessage(readAnswerMessage_I40_messageObject, submodelReferencesList, dataElementsList);
 
 		if (readAnswerMessage_I40_messageObject.type.getValue().toString().equals(MessageType.offer_acceptance.toString())){
             execution.setVariable("offerAccepted", "true");

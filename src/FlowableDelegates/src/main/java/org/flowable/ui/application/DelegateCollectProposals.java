@@ -100,15 +100,20 @@ public class DelegateCollectProposals implements JavaDelegate {
 					}
 					else{}
 				}
-				readMessage_I40_messageObject.submodelReferences.setValue(submodelReferencesList);
-				readMessage_I40_messageObject.dataElements.setValue(dataElementsList);
+				readMessage_I40_messageObject.transferInteractionElementsIntoMessage(readMessage_I40_messageObject, submodelReferencesList, dataElementsList);
 
 				execution.setVariable(formVariable, UIServices.displayProposal(readMessage_I40_messageObject));
 
 				try {
 					String tmpProposals = execution.getVariable("allCollectedProposals", String.class);
-					tmpProposals = SimpleServices.serializeCollectedObjects(readMessage_I40_messageObject.serialize(), tmpProposals);
-					execution.setVariable("allCollectedProposals", tmpProposals);
+					if (tmpProposals == null){
+						tmpProposals = SimpleServices.serializeCollectedObjects(readMessage_I40_messageObject.serialize(), "");
+						execution.setVariable("allCollectedProposals", tmpProposals);
+					} else {
+						tmpProposals = SimpleServices.serializeCollectedObjects(readMessage_I40_messageObject.serialize(), tmpProposals);
+						execution.setVariable("allCollectedProposals", tmpProposals);
+					}
+					
 				} catch (SerializationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

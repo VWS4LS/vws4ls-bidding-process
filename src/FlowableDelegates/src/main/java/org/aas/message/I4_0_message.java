@@ -4,12 +4,14 @@ package org.aas.message;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollection;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.SerializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonSerializer;
-
-
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultOperationVariable;
 
 public class I4_0_message{
@@ -145,8 +147,19 @@ public class I4_0_message{
                 else{
                     System.out.println("Deserialization of message of object[" + obj + "] failed.");
                 }
-            }
-        
+            }  
+    }
+
+    public I4_0_message transferInteractionElementsIntoMessage(I4_0_message msgObject, List<SubmodelElement> submodelReferencesList, List<SubmodelElement> dataElementsList){
+        msgObject.submodelReferences.setValue(submodelReferencesList);
+		msgObject.dataElements.setValue(dataElementsList);
+
+		List<SubmodelElement> smlTemp = new ArrayList<>();
+		smlTemp.add(msgObject.submodelReferences);
+		smlTemp.add(msgObject.dataElements);
+		msgObject.interactionElementsCollection.setValue(smlTemp);
+
+        return msgObject;
     }
     
 }

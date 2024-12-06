@@ -78,8 +78,13 @@ public class DelegateChooseProposal implements JavaDelegate {
                                 
                 try {
 					String tmpProposals = execution.getVariable("proposalListWithDecision", String.class);
-                    tmpProposals = SimpleServices.serializeCollectedObjects(proposal.serialize(), tmpProposals);
-					execution.setVariable("proposalListWithDecision", tmpProposals);
+                    if(tmpProposals == null){
+                        tmpProposals = SimpleServices.serializeCollectedObjects(proposal.serialize(), "");
+					    execution.setVariable("proposalListWithDecision", tmpProposals);
+                    } else {
+                        tmpProposals += SimpleServices.serializeCollectedObjects(proposal.serialize(), tmpProposals);
+					    execution.setVariable("proposalListWithDecision", tmpProposals);
+                    }
 				} catch (SerializationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

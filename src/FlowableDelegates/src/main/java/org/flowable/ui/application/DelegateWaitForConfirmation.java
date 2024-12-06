@@ -98,8 +98,7 @@ public class DelegateWaitForConfirmation implements JavaDelegate {
 			}
 			else{}
 		}
-		readMessage_I40_messageObject.submodelReferences.setValue(submodelReferencesList);
-		readMessage_I40_messageObject.dataElements.setValue(dataElementsList);
+		readMessage_I40_messageObject.transferInteractionElementsIntoMessage(readMessage_I40_messageObject, submodelReferencesList, dataElementsList);
 		
 		if(readMessage_I40_messageObject.type.getValue().compareTo(MessageType.confirming.toString()) == 0){
 			confirmationCounter = execution.getVariable("confirmationCounter",Integer.class);
