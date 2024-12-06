@@ -96,7 +96,6 @@ Fig. 4: Processes in Flowable
 Fig. 5: Forms in Flowable
 
 The following video shows the same process.
-[vid_initFlowable]: ./videos/Init_FlowableApps.mp4 "Import Apps in Flowable"
 ![](./videos/Init_FlowableApps.mp4)
 
 #### Start a bidding process <a id="startBiddingProcess"></a>
@@ -108,7 +107,6 @@ The first kind is called "timeManual" and shows the whole bidding process with a
 The second kind is called "time" and skips some of the user tasks. 
 Both kinds are shown in the video.
 
-[vid_processFlowable]: ./videos/Example_Process.mp4 "Example Processin Flowable"
 ![](./videos/Example_Process.mp4)
 
 
