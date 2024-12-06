@@ -95,15 +95,26 @@ Fig. 4: Processes in Flowable
 ![Fig. 5](./images/FormsFlowable.PNG)
 Fig. 5: Forms in Flowable
 
+The following video shows the same process.
+[vid_initFlowable]: ./videos/Init_FlowableApps.mp4 "Import Apps in Flowable"
+![](./videos/Init_FlowableApps.mp4)
+
 #### Start a bidding process <a id="startBiddingProcess"></a>
 
 To start a bidding process at least one `Service Requester` AAS and `Service Provider` AAS, which need to implement the Message Participant Submodel, must be stored in the `AAS-Repository`. For this example AAS are stored in the directoy `deploy/aasx`.
 
-(tbd.) The following video shows how the software applications work together.
+The following video shows how the software applications work together. Therfore one selection strategy is implemented that selects the best proposal regarding the process duration. To have a more automated bidding process and a very manual bidding process the strategy could be called in two kinds. 
+The first kind is called "timeManual" and shows the whole bidding process with all user tasks which are implemented in the business process models. 
+The second kind is called "time" and skips some of the user tasks. 
+Both kinds are shown in the video.
+
+[vid_processFlowable]: ./videos/Example_Process.mp4 "Example Processin Flowable"
+![](./videos/Example_Process.mp4)
+
+
+## Option 2: Expand the code of the 
 
 The demonstrator was developed for a special use case. If you want to change something you have to change the code of the Flowable delegates. To do so, you have to follow the instructions of option 2.
-
-## Option 2: Expand the code of the demonstrator
 
 Detailed information of implementing delegates in Flowable can be found [here](https://www.flowable.com/open-source/docs/oss-introduction).
 
