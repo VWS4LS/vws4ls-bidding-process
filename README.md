@@ -95,8 +95,8 @@ Fig. 4: Processes in Flowable
 ![Fig. 5](./images/FormsFlowable.PNG)
 Fig. 5: Forms in Flowable
 
-The following video shows the same process.
-![](./videos/Init_FlowableApps.mp4)
+The same process is shown in the video which is stored in the directory `videos/Init_FlowableApps.mp4`.
+
 
 #### Start a bidding process <a id="startBiddingProcess"></a>
 
@@ -105,9 +105,8 @@ To start a bidding process at least one `Service Requester` AAS and `Service Pro
 The following video shows how the software applications work together. Therfore one selection strategy is implemented that selects the best proposal regarding the process duration. To have a more automated bidding process and a very manual bidding process the strategy could be called in two kinds. 
 The first kind is called "timeManual" and shows the whole bidding process with all user tasks which are implemented in the business process models. 
 The second kind is called "time" and skips some of the user tasks. 
-Both kinds are shown in the video.
 
-![](./videos/Example_Process.mp4)
+Both kinds are shown in the video which is stored in the directory `videos/Example_Process.mp4`.
 
 
 ## Option 2: Expand the code of the 
