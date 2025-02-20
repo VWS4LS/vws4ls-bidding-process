@@ -5,7 +5,6 @@ import org.aas.http.api.NodeRedAPI;
 import org.aas.message.I4_0_message;
 import org.aas.services.MsgParticipantServices;
 import org.aas.services.SimpleServices;
-import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.SerializationException;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
