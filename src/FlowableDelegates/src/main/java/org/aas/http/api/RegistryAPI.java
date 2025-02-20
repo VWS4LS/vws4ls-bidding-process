@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -25,28 +27,29 @@ public class RegistryAPI {
         String response = new String();
 
         try{
-            URL url = new URL(urlString);
+            URI uri = new URI(urlString);
+            URL url = uri.toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
             if (conn.getResponseCode() != 200) {
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ conn.getResponseCode());
-		    }
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + conn.getResponseCode());
+            }
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(
-			(conn.getInputStream())));
+        BufferedReader br = new BufferedReader(new InputStreamReader(
+            (conn.getInputStream())));
 
-		String output = null;
+        String output = null;
         while ((output = br.readLine()) != null) {
             response += output;
-		}
+        }
         //cleaning respsonse for deserialization
         response = response.replace("{\"paging_metadata\":{\"cursor\":null},\"result\":", "");
         response = response.substring(0, response.lastIndexOf("}"));
 
-		conn.disconnect();
+        conn.disconnect();
 
         } catch (MalformedURLException e) {
 
@@ -56,6 +59,9 @@ public class RegistryAPI {
 
             e.printStackTrace();
 
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
         //deserialize Response to AAS Descriptors
@@ -77,7 +83,8 @@ public class RegistryAPI {
         String response = new String();
 
         try{
-            URL url = new URL(urlString);
+            URI uri = new URI(urlString);
+            URL url = uri.toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
@@ -105,7 +112,10 @@ public class RegistryAPI {
 
             e.printStackTrace();
 
-        }
+        } catch (URISyntaxException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
         //deserialize Response to AAS Descriptors
         try {
@@ -126,7 +136,8 @@ public class RegistryAPI {
         String response = new String();
 
         try{
-            URL url = new URL(urlString);
+            URI uri = new URI(urlString);
+            URL url = uri.toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
@@ -154,7 +165,10 @@ public class RegistryAPI {
 
             e.printStackTrace();
 
-        }
+        } catch (URISyntaxException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
         //deserialize Response to AAS Descriptors
         try {

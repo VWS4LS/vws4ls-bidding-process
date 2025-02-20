@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +30,8 @@ public class NodeRedAPI{
         String response = new String();
 
         try {
-
-            URL url = new URL(URLString);
+            URI uri = new URI(URLString);
+            URL url = uri.toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
@@ -65,6 +67,9 @@ public class NodeRedAPI{
 
             e.printStackTrace();
 
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
         return response;
@@ -102,8 +107,8 @@ public class NodeRedAPI{
         String response = new String();
 
         try {
-
-            URL url = new URL(URLString);
+            URI uri = new URI(URLString);
+            URL url = uri.toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
@@ -139,7 +144,10 @@ public class NodeRedAPI{
 
             e.printStackTrace();
 
-        }
+        } catch (URISyntaxException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
         return response;
     }
 }
